@@ -189,6 +189,16 @@ const Screens = {
     }
   },
 
+  // Helper function to draw back button
+  drawBackButton: function() {
+    g.setColor(1, 0, 0);
+    g.fillRect(10, 10, 60, 30);
+    g.setColor(1, 1, 1);
+    g.setFont("6x8", 1);
+    g.setFontAlign(0, 0);
+    g.drawString("← Back", 40, 25);
+  },
+
   showHome: function() {
     g.clear();
     g.setColor(1, 1, 1);
@@ -258,6 +268,9 @@ const Screens = {
     g.setColor(0, 0, 0);
     g.drawString("✅ START ROUND", 120, 175);
     
+    // Draw back button
+    this.drawBackButton();
+    
     g.setColor(1, 1, 1);
     g.setFont("6x8", 1);
     g.setFontAlign(0, 1);
@@ -269,6 +282,9 @@ const Screens = {
         if (xy && xy.y > 160 && xy.y < 190) {
           // Start the round
           this.startNewRound();
+        } else if (xy && xy.x < 70 && xy.y < 40) {
+          // Back button
+          this.show('home');
         }
       },
       btn: () => {
@@ -335,6 +351,9 @@ const Screens = {
       g.drawString("👆 Tap to Start Detection", 120, 140);
     }
     
+    // Draw back button
+    this.drawBackButton();
+    
     g.setColor(1, 1, 1);
     g.setFont("6x8", 1);
     g.setFontAlign(0, 1);
@@ -354,6 +373,9 @@ const Screens = {
           } else {
             this.startSwingDetection();
           }
+        } else if (xy && xy.x < 70 && xy.y < 40) {
+          // Back button
+          this.show('home');
         }
       },
       btn: () => {
@@ -423,6 +445,23 @@ const Screens = {
     g.setColor(0, 0, 0);
     g.drawString("✅ Confirm Shot", 120, 175);
     
+    // Draw back button
+    this.drawBackButton();
+    
+    Bangle.setUI({
+      mode: "custom",
+      touch: (button, xy) => {
+        if (xy && xy.x < 70 && xy.y < 40) {
+          // Back button - return to hole
+          this.show('hole', { holeNumber: AppState.currentHole.hole });
+        }
+      },
+      btn: () => {
+        // Return to hole
+        this.show('hole', { holeNumber: AppState.currentHole.hole });
+      }
+    });
+    
     setTimeout(() => {
       this.show('hole', { holeNumber: AppState.currentHole.hole });
     }, 3000);
@@ -475,6 +514,48 @@ const Screens = {
     this.show('roundSummary');
   },
 
+  showRoundSummary: function() {
+    g.clear();
+    g.setColor(1, 1, 1);
+    g.setFont("Vector", 18);
+    g.setFontAlign(0, 0);
+    
+    g.drawString("🏆 Round Complete!", 120, 30);
+    
+    g.setFont("Vector", 14);
+    
+    if (AppState.currentRound) {
+      const totalShots = AppState.currentRound.holes.reduce((total, hole) => total + hole.shots.length, 0);
+      const duration = Math.floor(AppState.currentRound.duration_sec / 60);
+      
+      g.drawString(`Course: ${AppState.currentRound.course}`, 120, 70);
+      g.drawString(`Total Shots: ${totalShots}`, 120, 95);
+      g.drawString(`Duration: ${duration}m`, 120, 120);
+      g.drawString(`Holes: ${AppState.currentRound.holes.length}`, 120, 145);
+    }
+    
+    // Draw back button
+    this.drawBackButton();
+    
+    g.setColor(1, 1, 1);
+    g.setFont("6x8", 1);
+    g.setFontAlign(0, 1);
+    g.drawString("Tap back to return home", 120, 220);
+    
+    Bangle.setUI({
+      mode: "custom",
+      touch: (button, xy) => {
+        if (xy && xy.x < 70 && xy.y < 40) {
+          // Back button
+          this.show('home');
+        }
+      },
+      btn: () => {
+        this.show('home');
+      }
+    });
+  },
+
   showPastRounds: function() {
     const rounds = Storage.getRoundsList();
     
@@ -486,8 +567,17 @@ const Screens = {
       g.drawString("📊 Past Rounds", 120, 40);
       g.drawString("No rounds yet", 120, 120);
       
+      // Draw back button
+      this.drawBackButton();
+      
       Bangle.setUI({
         mode: "custom",
+        touch: (button, xy) => {
+          if (xy && xy.x < 70 && xy.y < 40) {
+            // Back button
+            this.show('home');
+          }
+        },
         btn: () => this.show('home')
       });
       return;
@@ -546,6 +636,39 @@ const Screens = {
     };
     
     E.showMenu(menu);
+  },
+
+  showPutting: function(data) {
+    g.clear();
+    g.setColor(1, 1, 1);
+    g.setFont("Vector", 18);
+    g.setFontAlign(0, 0);
+    
+    g.drawString("⛳ Putting Mode", 120, 30);
+    g.setFont("Vector", 14);
+    g.drawString("Putting tracking", 120, 70);
+    g.drawString("coming soon...", 120, 95);
+    
+    // Draw back button
+    this.drawBackButton();
+    
+    g.setColor(1, 1, 1);
+    g.setFont("6x8", 1);
+    g.setFontAlign(0, 1);
+    g.drawString("Tap back to return", 120, 220);
+    
+    Bangle.setUI({
+      mode: "custom",
+      touch: (button, xy) => {
+        if (xy && xy.x < 70 && xy.y < 40) {
+          // Back button
+          this.show('hole', { holeNumber: AppState.currentHole.hole });
+        }
+      },
+      btn: () => {
+        this.show('hole', { holeNumber: AppState.currentHole.hole });
+      }
+    });
   }
 };
 
