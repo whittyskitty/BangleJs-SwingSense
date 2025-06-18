@@ -8,7 +8,7 @@ let AppState = {
   swingDetectionActive: false,
   gpsTracking: false,
   settings: {},
-  version: "0.1.3"
+  version: "0.1.4"
 };
 
 // // 
