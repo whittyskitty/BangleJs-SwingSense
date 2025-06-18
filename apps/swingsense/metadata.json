@@ -2,7 +2,7 @@
     "id": "swingsense",
     "name": "Swingsense",
     "shortName": "Swing",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "description": "A Bangle.js app for swing analysis.",
     "icon": "app.png",
     "type": "app",

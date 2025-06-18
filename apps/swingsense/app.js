@@ -8,7 +8,7 @@ let AppState = {
   swingDetectionActive: false,
   gpsTracking: false,
   settings: {},
-  version: "0.1.5"
+  version: "0.1.6"
 };
 
 // // 
@@ -323,42 +323,56 @@ const Screens = {
     
     g.clear();
     g.setColor(1, 1, 1);
-    g.setFont("Vector", 18);
-    g.setFontAlign(0, 0);
-    
+    g.setFont("6x8", 2);
+    g.setFontAlign(0, -1); // left align
+    let y = 15;
+    const x = 10;
     // Header
-    g.drawString(`⛳ Hole ${hole.hole} | Par ${hole.par}`, 120, 25);
-    
-    g.setFont("Vector", 14);
-    
+    g.drawString(`⛳ Hole ${hole.hole} | Par ${hole.par}`, x, y);
+    y += 22;
     // Current shot count
-    const shotCount = hole.shots.length;
-    g.drawString(`Shots: ${shotCount}`, 120, 55);
-    
+    g.drawString(`Shots: ${hole.shots.length}`, x, y);
+    y += 18;
     // Time on hole
     const timeOnHole = hole.start_time ? Math.floor((Date.now() - hole.start_time) / 1000) : 0;
-    g.drawString(`Time: ${Math.floor(timeOnHole / 60)}m ${timeOnHole % 60}s`, 120, 80);
-    
+    g.drawString(`Time: ${Math.floor(timeOnHole / 60)}m ${timeOnHole % 60}s`, x, y);
+    y += 18;
     // Club selection
-    g.drawString("🛠️ Club: Driver", 120, 110);
-    
+    let club = hole.selectedClub || (hole.shots.length > 0 ? hole.shots[hole.shots.length-1].club : "Driver");
+    g.drawString(`Club: ${club}`, x, y);
+    y += 18;
     // Swing detection status
     if (AppState.swingDetectionActive) {
       g.setColor(0, 1, 0);
-      g.drawString("⏳ Swing Detection Active", 120, 140);
+      g.drawString("Swing Detection Active", x, y);
     } else {
       g.setColor(1, 1, 0);
-      g.drawString("👆 Tap to Start Detection", 120, 140);
+      g.drawString("Tap 'Swing' to Start", x, y);
     }
-    
+    g.setColor(1, 1, 1);
     // Draw back button
     this.drawBackButton();
-    
-    g.setColor(1, 1, 1);
+    // Draw two large buttons at the bottom
+    const btnY = 150;
+    const btnH = 50;
+    const btnPad = 20;
+    const btnW = 120;
+    // Club button
+    g.setColor(0.2,0.2,1);
+    g.fillRect(btnPad, btnY, btnPad+btnW, btnY+btnH);
+    g.setColor(1,1,1);
+    g.setFont("Vector", 18);
+    g.setFontAlign(0,0);
+    g.drawString("Club", btnPad+btnW/2, btnY+btnH/2);
+    // Swing button
+    g.setColor(0,0.7,0);
+    g.fillRect(240-btnPad-btnW, btnY, 240-btnPad, btnY+btnH);
+    g.setColor(1,1,1);
+    g.drawString("Swing", 240-btnPad-btnW/2, btnY+btnH/2);
+    // Instructions
     g.setFont("6x8", 1);
     g.setFontAlign(0, 1);
-    g.drawString("Button: Menu | Touch: Actions", 120, 220);
-    
+    g.drawString("Menu: More", 120, 220);
     this.setupHoleTouch();
   },
 
@@ -366,15 +380,18 @@ const Screens = {
     Bangle.setUI({
       mode: "custom",
       touch: (button, xy) => {
-        if (xy && xy.y > 130 && xy.y < 160) {
-          // Toggle swing detection
-          if (AppState.swingDetectionActive) {
-            this.stopSwingDetection();
-          } else {
+        // Club button
+        if (xy && xy.x > 20 && xy.x < 140 && xy.y > 150 && xy.y < 200) {
+          this.showClubSelect();
+        // Swing button
+        } else if (xy && xy.x > 100 && xy.x < 220 && xy.y > 150 && xy.y < 200) {
+          if (!AppState.swingDetectionActive) {
             this.startSwingDetection();
+          } else {
+            this.stopSwingDetection();
           }
+        // Back button
         } else if (xy && xy.x < 70 && xy.y < 40) {
-          // Back button
           this.show('home');
         }
       },
@@ -383,6 +400,22 @@ const Screens = {
         this.showHoleMenu();
       }
     });
+  },
+
+  showClubSelect: function() {
+    const clubs = [
+      "Driver", "3 Wood", "5 Wood",
+      "3 Iron", "4 Iron", "5 Iron", "6 Iron", "7 Iron", "8 Iron", "9 Iron",
+      "PW", "SW", "LW", "Putter"
+    ];
+    const menu = { '': { title: 'Select Club' }, '< Back': () => this.show('hole', { holeNumber: AppState.currentHole.hole }) };
+    clubs.forEach(club => {
+      menu[club] = () => {
+        AppState.currentHole.selectedClub = club;
+        this.show('hole', { holeNumber: AppState.currentHole.hole });
+      };
+    });
+    E.showMenu(menu);
   },
 
   startSwingDetection: function() {
