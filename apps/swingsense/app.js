@@ -8,7 +8,7 @@ let AppState = {
   swingDetectionActive: false,
   gpsTracking: false,
   settings: {},
-  version: "0.1.4"
+  version: "0.1.5"
 };
 
 // // 
@@ -387,42 +387,89 @@ const Screens = {
 
   startSwingDetection: function() {
     AppState.swingDetectionActive = true;
-    
+    this._swingData = {
+      accelHistory: [],
+      peakAccel: 0,
+      backswingStart: null,
+      backswingEnd: null,
+      downswingStart: null,
+      downswingEnd: null,
+      swingDetected: false
+    };
+
     if (AppState.settings.vibrationFeedback) {
       Bangle.buzz(100);
     }
-    
-    // Simulate swing detection for emulator
-    setTimeout(() => {
-      if (AppState.swingDetectionActive) {
-        this.onSwingDetected();
+
+    // Remove any previous listeners
+    Bangle.removeAllListeners('accel');
+
+    // Sensitivity threshold (tweak as needed)
+    const SWING_THRESHOLD = 2.5; // Gs
+    const MIN_TIME_BETWEEN_SWINGS = 1000; // ms
+    let lastSwingTime = 0;
+
+    Bangle.on('accel', (a) => {
+      if (!AppState.swingDetectionActive) return;
+      const now = Date.now();
+      // Calculate magnitude
+      const mag = Math.sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
+      this._swingData.accelHistory.push({t: now, mag});
+      if (mag > this._swingData.peakAccel) this._swingData.peakAccel = mag;
+
+      // Detect backswing start (first time above 1.2G)
+      if (!this._swingData.backswingStart && mag > 1.2) {
+        this._swingData.backswingStart = now;
       }
-    }, 3000);
-    
+      // Detect backswing end (peak before swing)
+      if (this._swingData.backswingStart && !this._swingData.backswingEnd && mag < 1.0) {
+        this._swingData.backswingEnd = now;
+        this._swingData.downswingStart = now;
+      }
+      // Detect swing (impact) as a spike above threshold
+      if (this._swingData.downswingStart && !this._swingData.swingDetected && mag > SWING_THRESHOLD && (now - lastSwingTime > MIN_TIME_BETWEEN_SWINGS)) {
+        this._swingData.downswingEnd = now;
+        this._swingData.swingDetected = true;
+        lastSwingTime = now;
+        this.stopSwingDetection();
+        // Calculate tempo
+        const backswing_ms = this._swingData.backswingEnd && this._swingData.backswingStart ? (this._swingData.backswingEnd - this._swingData.backswingStart) : 0;
+        const downswing_ms = this._swingData.downswingEnd && this._swingData.downswingStart ? (this._swingData.downswingEnd - this._swingData.downswingStart) : 0;
+        const ratio = downswing_ms > 0 ? backswing_ms / downswing_ms : 0;
+        const peak_accel = this._swingData.peakAccel;
+        this.onSwingDetected({
+          backswing_ms,
+          downswing_ms,
+          ratio,
+          peak_accel
+        });
+      }
+    });
+
     this.show('hole', { holeNumber: AppState.currentHole.hole });
   },
 
   stopSwingDetection: function() {
     AppState.swingDetectionActive = false;
+    Bangle.removeAllListeners('accel');
     this.show('hole', { holeNumber: AppState.currentHole.hole });
   },
 
-  onSwingDetected: function() {
+  onSwingDetected: function(swingData) {
     AppState.swingDetectionActive = false;
-    
+    Bangle.removeAllListeners('accel');
     if (AppState.settings.vibrationFeedback) {
       Bangle.buzz(200);
     }
-    
     // Create shot
     const shot = Models.createShot("Driver", "Tee", "None");
-    shot.tempo.backswing_ms = 700 + Math.random() * 200;
-    shot.tempo.downswing_ms = 200 + Math.random() * 100;
-    shot.tempo.ratio = shot.tempo.backswing_ms / shot.tempo.downswing_ms;
-    shot.peak_accel = 12 + Math.random() * 6;
-    
+    if (swingData) {
+      shot.tempo.backswing_ms = swingData.backswing_ms;
+      shot.tempo.downswing_ms = swingData.downswing_ms;
+      shot.tempo.ratio = swingData.ratio;
+      shot.peak_accel = swingData.peak_accel;
+    }
     AppState.currentHole.shots.push(shot);
-    
     // Show shot result
     this.showShotResult(shot);
   },
@@ -464,7 +511,7 @@ const Screens = {
     
     setTimeout(() => {
       this.show('hole', { holeNumber: AppState.currentHole.hole });
-    }, 3000);
+    }, 20000); // 20 seconds
   },
 
   showHoleMenu: function() {
