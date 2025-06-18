@@ -8,10 +8,10 @@ let AppState = {
   swingDetectionActive: false,
   gpsTracking: false,
   settings: {},
-  version: "0.1.2"
+  version: "0.1.3"
 };
 
-// 
+// // 
 // Load settings
 function loadSettings() {
   try {
