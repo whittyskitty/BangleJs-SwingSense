@@ -1,4 +1,4 @@
-# SwingSense Golf Tracker for Bangle.js
+git# SwingSense Golf Tracker for Bangle.js
 
 A comprehensive golf swing tracking and round management app for Bangle.js smartwatches.
 

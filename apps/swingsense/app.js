@@ -1,3 +1,7 @@
+g.clear();
+g.setFont("Vector", 24);
+g.drawString("Welcome to SwingSense!", 60, 60);
+
 // SwingSense Golf Tracker - Main Application
 // Entry point and navigation system
 
@@ -8,7 +12,7 @@ let AppState = {
   swingDetectionActive: false,
   gpsTracking: false,
   settings: {},
-  version: "0.1.6"
+  version: "0.1.7"
 };
 
 // // 
@@ -202,26 +206,26 @@ const Screens = {
   showHome: function() {
     g.clear();
     g.setColor(1, 1, 1);
-    g.setFont("Vector", 24);
+    g.setFont("Vector", 20);
     g.setFontAlign(0, 0);
     
     // Title
-    g.drawString("⛳ SwingSense", 120, 40);
+    g.drawString("SwingSense", 88, 30);
     
-    g.setFont("Vector", 18);
+    g.setFont("Vector", 16);
     
     // Menu options
-    const menuY = 90;
-    const spacing = 35;
+    const menuY = 70;
+    const spacing = 30;
     
-    g.drawString("🏌️ Start Round", 120, menuY);
-    g.drawString("📊 Past Rounds", 120, menuY + spacing);
-    g.drawString("⚙️ Settings", 120, menuY + spacing * 2);
+    g.drawString("Start Round", 88, menuY);
+    g.drawString("Past Rounds", 88, menuY + spacing);
+    g.drawString("Settings", 88, menuY + spacing * 2);
     
     // Instructions
     g.setFont("6x8", 1);
     g.setFontAlign(0, 1);
-    g.drawString("Tap to select", 120, 220);
+    g.drawString("Tap to select", 88, 170);
     
     this.setupHomeTouch();
   },
@@ -230,13 +234,13 @@ const Screens = {
     Bangle.setUI({
       mode: "custom",
       touch: (button, xy) => {
-        if (xy && xy.y > 70 && xy.y < 105) {
+        if (xy && xy.y > 55 && xy.y < 85) {
           // Start Round
           this.show('startRound');
-        } else if (xy && xy.y > 105 && xy.y < 140) {
+        } else if (xy && xy.y > 85 && xy.y < 115) {
           // Past Rounds
           this.show('pastRounds');
-        } else if (xy && xy.y > 140 && xy.y < 175) {
+        } else if (xy && xy.y > 115 && xy.y < 145) {
           // Settings
           this.show('settings');
         }
@@ -251,22 +255,22 @@ const Screens = {
   showStartRound: function(data) {
     g.clear();
     g.setColor(1, 1, 1);
-    g.setFont("Vector", 20);
+    g.setFont("Vector", 18);
     g.setFontAlign(0, 0);
     
-    g.drawString("🏁 Start Round", 120, 30);
+    g.drawString("Start Round", 88, 25);
     
-    g.setFont("Vector", 16);
+    g.setFont("Vector", 14);
     
     // Simple start for now - we'll expand this
-    g.drawString("Course: Test Course", 120, 70);
-    g.drawString("Holes: 18", 120, 100);
-    g.drawString("Weather: Calm", 120, 130);
+    g.drawString("Course: Test Course", 88, 55);
+    g.drawString("Holes: 18", 88, 75);
+    g.drawString("Weather: Calm", 88, 95);
     
     g.setColor(0, 1, 0);
-    g.fillRect(40, 160, 200, 190);
+    g.fillRect(20, 120, 156, 155);
     g.setColor(0, 0, 0);
-    g.drawString("✅ START ROUND", 120, 175);
+    g.drawString("START ROUND", 88, 137);
     
     // Draw back button
     this.drawBackButton();
@@ -274,12 +278,12 @@ const Screens = {
     g.setColor(1, 1, 1);
     g.setFont("6x8", 1);
     g.setFontAlign(0, 1);
-    g.drawString("Button: Back", 120, 220);
+    g.drawString("Button: Back", 88, 170);
     
     Bangle.setUI({
       mode: "custom",
       touch: (button, xy) => {
-        if (xy && xy.y > 160 && xy.y < 190) {
+        if (xy && xy.y > 120 && xy.y < 155) {
           // Start the round
           this.startNewRound();
         } else if (xy && xy.x < 70 && xy.y < 40) {
@@ -323,56 +327,55 @@ const Screens = {
     
     g.clear();
     g.setColor(1, 1, 1);
-    g.setFont("6x8", 2);
-    g.setFontAlign(0, -1); // left align
-    let y = 15;
-    const x = 10;
+    g.setFont("6x8", 1);
+    g.setFontAlign(0, 0); // center align
+    let y = 20;
     // Header
-    g.drawString(`⛳ Hole ${hole.hole} | Par ${hole.par}`, x, y);
-    y += 22;
-    // Current shot count
-    g.drawString(`Shots: ${hole.shots.length}`, x, y);
+    g.drawString(`Hole ${hole.hole} (Par ${hole.par})`, 88, y);
     y += 18;
+    // Current shot count
+    g.drawString(`Shots: ${hole.shots.length}`, 88, y);
+    y += 14;
     // Time on hole
     const timeOnHole = hole.start_time ? Math.floor((Date.now() - hole.start_time) / 1000) : 0;
-    g.drawString(`Time: ${Math.floor(timeOnHole / 60)}m ${timeOnHole % 60}s`, x, y);
-    y += 18;
+    g.drawString(`Time: ${Math.floor(timeOnHole / 60)}m ${timeOnHole % 60}s`, 88, y);
+    y += 14;
     // Club selection
     let club = hole.selectedClub || (hole.shots.length > 0 ? hole.shots[hole.shots.length-1].club : "Driver");
-    g.drawString(`Club: ${club}`, x, y);
-    y += 18;
+    g.drawString(`Club: ${club}`, 88, y);
+    y += 14;
     // Swing detection status
     if (AppState.swingDetectionActive) {
       g.setColor(0, 1, 0);
-      g.drawString("Swing Detection Active", x, y);
+      g.drawString("Active", 88, y);
     } else {
       g.setColor(1, 1, 0);
-      g.drawString("Tap 'Swing' to Start", x, y);
+      g.drawString("Ready", 88, y);
     }
     g.setColor(1, 1, 1);
     // Draw back button
     this.drawBackButton();
-    // Draw two large buttons at the bottom
-    const btnY = 150;
-    const btnH = 50;
-    const btnPad = 20;
-    const btnW = 120;
-    // Club button
+    // Draw two large buttons at the bottom (each half the width, with a gap)
+    const btnY = 130;
+    const btnH = 35;
+    const btnGap = 4;
+    const btnW = 80;
+    // Club button (left)
     g.setColor(0.2,0.2,1);
-    g.fillRect(btnPad, btnY, btnPad+btnW, btnY+btnH);
+    g.fillRect(8, btnY, 8+btnW, btnY+btnH);
     g.setColor(1,1,1);
-    g.setFont("Vector", 18);
+    g.setFont("Vector", 16);
     g.setFontAlign(0,0);
-    g.drawString("Club", btnPad+btnW/2, btnY+btnH/2);
-    // Swing button
+    g.drawString("Club", 8+btnW/2, btnY+btnH/2);
+    // Swing button (right)
     g.setColor(0,0.7,0);
-    g.fillRect(240-btnPad-btnW, btnY, 240-btnPad, btnY+btnH);
+    g.fillRect(88+btnGap, btnY, 88+btnGap+btnW, btnY+btnH);
     g.setColor(1,1,1);
-    g.drawString("Swing", 240-btnPad-btnW/2, btnY+btnH/2);
+    g.drawString("Swing", 88+btnGap+btnW/2, btnY+btnH/2);
     // Instructions
     g.setFont("6x8", 1);
     g.setFontAlign(0, 1);
-    g.drawString("Menu: More", 120, 220);
+    g.drawString("Menu: More", 88, 170);
     this.setupHoleTouch();
   },
 
@@ -380,11 +383,11 @@ const Screens = {
     Bangle.setUI({
       mode: "custom",
       touch: (button, xy) => {
-        // Club button
-        if (xy && xy.x > 20 && xy.x < 140 && xy.y > 150 && xy.y < 200) {
+        // Club button (left half)
+        if (xy && xy.x > 8 && xy.x < 8+80 && xy.y > 130 && xy.y < 165) {
           this.showClubSelect();
-        // Swing button
-        } else if (xy && xy.x > 100 && xy.x < 220 && xy.y > 150 && xy.y < 200) {
+        // Swing button (right half)
+        } else if (xy && xy.x > 88+8 && xy.x < 88+8+80 && xy.y > 130 && xy.y < 165) {
           if (!AppState.swingDetectionActive) {
             this.startSwingDetection();
           } else {
