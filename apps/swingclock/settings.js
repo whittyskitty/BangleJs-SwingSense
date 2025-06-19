@@ -1,6 +1,6 @@
-// SwingSense Settings Configuration
+// swingclock Settings Configuration
 (function(back) {
-  let settings = require('Storage').readJSON('swingsense.json', true) || {
+  let settings = require('Storage').readJSON('swingclock.json', true) || {
     units: 'yards',
     autoGPS: true,
     swingSensitivity: 'medium',
@@ -9,11 +9,11 @@
   
   function save(key, value) {
     settings[key] = value;
-    require('Storage').writeJSON('swingsense.json', settings);
+    require('Storage').writeJSON('swingclock.json', settings);
   }
   
   const settingsMenu = {
-    '': {'title': 'SwingSense Settings'},
+    '': {'title': 'swingclock Settings'},
     '< Back': back,
     'Distance Units': {
       value: settings.units,
@@ -39,10 +39,10 @@
           if (result) {
             // Clear all app data
             const storage = require('Storage');
-            const files = storage.list(/^swingsense/);
+            const files = storage.list(/^swingclock/);
             files.forEach(file => storage.erase(file));
             
-            E.showMessage("Data Cleared", "SwingSense");
+            E.showMessage("Data Cleared", "swingclock");
             setTimeout(() => {
               back();
             }, 2000);

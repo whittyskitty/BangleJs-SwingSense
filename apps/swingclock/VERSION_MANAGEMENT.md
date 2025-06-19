@@ -1,4 +1,4 @@
-# Version Management for SwingSense
+# Version Management for swingclock
 
 This app includes automatic version management that increments the version with each commit.
 
@@ -70,7 +70,7 @@ The version bump script updates these files:
 
 ### Pre-commit Hook
 - Located at `.git/hooks/pre-commit`
-- Automatically runs when committing SwingSense files
+- Automatically runs when committing swingclock files
 - Increments patch version
 - Stages updated files for commit
 

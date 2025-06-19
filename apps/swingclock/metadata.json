@@ -1,5 +1,5 @@
 {
-    "id": "swingsense",
+    "id": "swingclock",
     "name": "SwingClock",
     "shortName": "SwingClock",
     "version": "0.1.1",
@@ -12,22 +12,22 @@
     ],
     "storage": [
         {
-            "name": "swingsense.app.js",
+            "name": "swingclock.app.js",
             "url": "app.js"
         },
         {
-            "name": "swingsense.img",
+            "name": "swingclock.img",
             "url": "app-icon.js",
             "evaluate": true
         },
         {
-            "name": "swingsense.settings.js",
+            "name": "swingclock.settings.js",
             "url": "settings.js"
         }
     ],
     "data": [
         {
-            "name": "swingsense.json"
+            "name": "swingclock.json"
         }
     ],
     "readme": "README.md"

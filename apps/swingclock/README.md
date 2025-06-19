@@ -1,4 +1,4 @@
-git# SwingSense Golf Tracker for Bangle.js
+git# swingclock Golf Tracker for Bangle.js
 
 A comprehensive golf swing tracking and round management app for Bangle.js smartwatches.
 
@@ -23,14 +23,14 @@ A comprehensive golf swing tracking and round management app for Bangle.js smart
 ### Option 1: Bangle.js App Loader (Recommended)
 1. Visit [banglejs.com/apps](https://banglejs.com/apps)
 2. Connect your Bangle.js 2
-3. Search for "SwingSense" and install
+3. Search for "swingclock" and install
 
 ### Option 2: Manual Installation
 1. Connect to [Espruino Web IDE](https://espruino.com/ide)
-2. Upload `app.js` to storage as `swingsense.app.js`
-3. Upload `app-icon.js` to storage as `swingsense.img`
-4. Upload `settings.js` to storage as `swingsense.settings.js`
-5. Create `swingsense.info` file with app metadata
+2. Upload `app.js` to storage as `swingclock.app.js`
+3. Upload `app-icon.js` to storage as `swingclock.img`
+4. Upload `settings.js` to storage as `swingclock.settings.js`
+5. Create `swingclock.info` file with app metadata
 
 ### Option 3: Development/Testing
 1. Load `app.js` in the Espruino Web IDE
@@ -40,7 +40,7 @@ A comprehensive golf swing tracking and round management app for Bangle.js smart
 ## Usage
 
 ### Starting a Round
-1. Launch SwingSense from the Bangle.js menu
+1. Launch swingclock from the Bangle.js menu
 2. Tap "🏌️ Start Round"
 3. Configure course name, hole count, and weather
 4. Tap "✅ START ROUND"
@@ -110,9 +110,9 @@ A comprehensive golf swing tracking and round management app for Bangle.js smart
 - **Vibration Feedback**: Haptic feedback for swing detection
 
 ### Data Management
-- Settings are stored in `swingsense.json`
-- Rounds are stored in individual files: `swingsense.round.{id}.json`
-- Round summaries are stored in `swingsense.rounds.json`
+- Settings are stored in `swingclock.json`
+- Rounds are stored in individual files: `swingclock.round.{id}.json`
+- Round summaries are stored in `swingclock.rounds.json`
 
 ## Emulator Testing
 

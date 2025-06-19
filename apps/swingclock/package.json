@@ -1,5 +1,5 @@
 {
-  "name": "swingsense",
+  "name": "swingclock",
   "version": "0.1.0",
   "description": "A Bangle.js app for swing analysis",
   "main": "app.js",
