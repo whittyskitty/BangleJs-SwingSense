@@ -1,10 +1,11 @@
 // swingclock Settings Configuration
 (function(back) {
   let settings = require('Storage').readJSON('swingclock.json', true) || {
-    units: 'yards',
-    autoGPS: true,
-    swingSensitivity: 'medium',
-    vibrationFeedback: true
+    updateInterval: 100,
+    fontSize: 'large',
+    showReference: false,
+    vibrationFeedback: true,
+    autoZero: false
   };
   
   function save(key, value) {
@@ -13,36 +14,48 @@
   }
   
   const settingsMenu = {
-    '': {'title': 'swingclock Settings'},
+    '': {'title': 'Angle Tracker Settings'},
     '< Back': back,
-    'Distance Units': {
-      value: settings.units,
-      onchange: (v) => save('units', v),
-      options: ['yards', 'meters']
+    'Update Interval': {
+      value: settings.updateInterval,
+      min: 50,
+      max: 500,
+      step: 50,
+      onchange: (v) => save('updateInterval', v),
+      format: (v) => v + 'ms'
     },
-    'Auto GPS Start': {
-      value: settings.autoGPS,
-      onchange: (v) => save('autoGPS', v)
+    'Font Size': {
+      value: settings.fontSize,
+      onchange: (v) => save('fontSize', v),
+      options: ['small', 'medium', 'large']
     },
-    'Swing Sensitivity': {
-      value: settings.swingSensitivity,
-      onchange: (v) => save('swingSensitivity', v),
-      options: ['low', 'medium', 'high']
+    'Show Reference': {
+      value: settings.showReference,
+      onchange: (v) => save('showReference', v)
     },
     'Vibration Feedback': {
       value: settings.vibrationFeedback,
       onchange: (v) => save('vibrationFeedback', v)
     },
-    'Clear All Data': {
+    'Auto Zero on Start': {
+      value: settings.autoZero,
+      onchange: (v) => save('autoZero', v)
+    },
+    'Reset to Defaults': {
       value: () => {
-        E.showPrompt("Clear all rounds and settings?").then((result) => {
+        E.showPrompt("Reset to default settings?").then((result) => {
           if (result) {
-            // Clear all app data
-            const storage = require('Storage');
-            const files = storage.list(/^swingclock/);
-            files.forEach(file => storage.erase(file));
+            // Reset to default settings
+            const defaultSettings = {
+              updateInterval: 100,
+              fontSize: 'large',
+              showReference: false,
+              vibrationFeedback: true,
+              autoZero: false
+            };
+            require('Storage').writeJSON('swingclock.json', defaultSettings);
             
-            E.showMessage("Data Cleared", "swingclock");
+            E.showMessage("Settings Reset", "swingclock");
             setTimeout(() => {
               back();
             }, 2000);
