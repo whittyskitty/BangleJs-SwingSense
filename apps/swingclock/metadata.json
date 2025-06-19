@@ -1,9 +1,9 @@
 {
     "id": "swingsense",
-    "name": "Swingsense",
-    "shortName": "Swing",
-    "version": "0.1.7",
-    "description": "A Bangle.js app for swing analysis.",
+    "name": "SwingClock",
+    "shortName": "SwingClock",
+    "version": "0.1.1",
+    "description": "A Bangle.js app for swing clock.",
     "icon": "app.png",
     "type": "app",
     "tags": "tool,bluetooth",
